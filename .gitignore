@@ -1,0 +1,21 @@
+# Node / Web
+node_modules/
+dist/
+.env
+.env.local
+
+# Flutter / Android
+apps/mobile/build/
+apps/mobile/.dart_tool/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+apps/mobile/android/.gradle/
+apps/mobile/android/local.properties
+*.apk
+*.aab
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.log
