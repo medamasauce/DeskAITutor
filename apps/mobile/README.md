@@ -10,8 +10,9 @@ Flutterアプリ。QRコードでPCとペアリングし、画面タップで手
 - [x] Gemini APIへの送信・構造化出力(`steps`配列)の取得 (`services/gemini_service.dart`)
 - [x] APIエラー(429/5xx等)のフィードバック
 - [x] APIキーの端末内保存 (`services/api_key_store.dart`)
-- [ ] Bluetoothリモコン(MediaSession)対応 — Phase 3
-- [ ] フォアグラウンドサービス化・バッテリー最適化除外 — Phase 3
+- [x] Bluetoothリモコン(MediaSession)対応 — Phase 3
+- [x] フォアグラウンドサービス化・バッテリー最適化除外 — Phase 3
+- [x] 切断時の自動再接続（バックオフ）・復旧不能時のQR再スキャン導線 — Phase 3
 
 ## セットアップ
 
@@ -26,6 +27,13 @@ flutter test
 ```bash
 flutter run
 ```
+
+## Bluetoothリモコン・フォアグラウンドサービスについて
+
+- `android/app/src/main/kotlin/.../TriggerForegroundService.kt` が画面OFF時でもBluetoothリモコンのメディアボタン(`MediaSessionCompat`)を受信し続けるフォアグラウンドサービスです。`PARTIAL_WAKE_LOCK`でCPUのみを起こし、画面は点灯しません。
+- 「Android動作確認済み」を明記したBluetoothシャッターリモコン（AVRCP/メディアボタンとして動作するもの）の使用を推奨します。一部の安価な製品はiOS専用設計のため反応しない場合があります。
+- 初回起動時、バッテリー最適化の除外をシステムダイアログで依頼します（メーカー独自の電力最適化がある機種では、別途端末設定側での許可が必要な場合があります）。
+- Bluetoothリモコンと画面タップボタンは同時に有効で、どちらを使っても同じ撮影・送信ロジックが呼ばれます。
 
 ## PeerJS互換シグナリングについて
 

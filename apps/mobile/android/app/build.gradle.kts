@@ -44,6 +44,11 @@ kotlin {
     }
 }
 
+dependencies {
+    // MediaSessionCompat (Bluetoothリモコンのメディアボタン受信用)
+    implementation("androidx.media:media:1.7.0")
+}
+
 flutter {
     source = "../.."
 }

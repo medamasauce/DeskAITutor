@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import '../models/peer_message.dart';
 import '../services/camera_service.dart';
+import '../services/foreground_trigger_service.dart';
 import '../services/gemini_service.dart';
 import '../services/pairing_service.dart';
 
 class HomeView extends StatefulWidget {
   final PairingService pairingService;
   final String apiKey;
-  const HomeView({super.key, required this.pairingService, required this.apiKey});
+  final VoidCallback onGiveUp; // 再接続を諦めた際にQRスキャン画面へ戻す
+  const HomeView({
+    super.key,
+    required this.pairingService,
+    required this.apiKey,
+    required this.onGiveUp,
+  });
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -16,6 +23,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final _camera = CameraService();
   final _gemini = GeminiService();
+  final _foregroundTrigger = ForegroundTriggerService();
   bool _cameraReady = false;
   bool _capturing = false;
   String? _lastError;
@@ -26,17 +34,30 @@ class _HomeViewState extends State<HomeView> {
     _camera.initialize().then((_) {
       if (mounted) setState(() => _cameraReady = true);
     });
+
+    // Bluetoothリモコンのメディアボタン検知は画面OFF/バックグラウンドでも
+    // 受信できるよう、フォアグラウンドサービス経由で行う。
+    _foregroundTrigger.start();
+    _foregroundTrigger.onTrigger.listen((_) => _onTrigger());
+
+    widget.pairingService.statusStream.listen((status) {
+      if (status == PairingStatus.failed) {
+        widget.onGiveUp();
+      }
+    });
   }
 
   @override
   void dispose() {
     _camera.dispose();
+    _foregroundTrigger.stop();
+    _foregroundTrigger.dispose();
     super.dispose();
   }
 
-  // トリガー発火時の共通処理（画面タップ / Bluetoothリモコンいずれからも呼ばれる想定）。
+  // トリガー発火時の共通処理（画面タップ / Bluetoothリモコンいずれからも呼ばれる）。
   Future<void> _onTrigger() async {
-    if (_capturing || !_cameraReady) return;
+    if (_capturing || !_cameraReady || !widget.pairingService.isConnected) return;
     setState(() {
       _capturing = true;
       _lastError = null;
@@ -101,7 +122,8 @@ class _HomeViewState extends State<HomeView> {
             const Padding(
               padding: EdgeInsets.all(24),
               child: Text(
-                'タップして手元のノートを撮影・送信',
+                'タップ、またはBluetoothリモコンのボタンで撮影・送信',
+                textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white54),
               ),
             ),
@@ -121,8 +143,10 @@ class _HomeViewState extends State<HomeView> {
         return 'PCとの接続を確立中…';
       case PairingStatus.connected:
         return 'PCと接続済み';
+      case PairingStatus.reconnecting:
+        return '接続が切れました。再接続を試みています…';
       case PairingStatus.failed:
-        return '接続に失敗しました';
+        return '再接続できませんでした';
     }
   }
 }

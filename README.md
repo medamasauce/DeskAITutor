@@ -7,8 +7,8 @@
 ## 開発状況（ロードマップ）
 
 - [x] Phase 1: PC側Webビューワー（`apps/web`）
-- [x] Phase 2: モバイルアプリの基本機能（`apps/mobile`） ← 現在ここ
-- [ ] Phase 3: Bluetoothリモコン対応・信頼性向上
+- [x] Phase 2: モバイルアプリの基本機能（`apps/mobile`）
+- [x] Phase 3: Bluetoothリモコン対応・信頼性向上 ← 現在ここ
 - [ ] Phase 4: OSS公開・配布整備
 
 ## 構成
