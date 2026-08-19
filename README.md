@@ -6,8 +6,8 @@
 
 ## 開発状況（ロードマップ）
 
-- [x] **Phase 1**: PC側Webビューワー（`apps/web`） ← 現在ここ
-- [ ] Phase 2: モバイルアプリの基本機能（`apps/mobile`）
+- [x] Phase 1: PC側Webビューワー（`apps/web`）
+- [x] Phase 2: モバイルアプリの基本機能（`apps/mobile`） ← 現在ここ
 - [ ] Phase 3: Bluetoothリモコン対応・信頼性向上
 - [ ] Phase 4: OSS公開・配布整備
 
@@ -46,6 +46,20 @@ npm run dev
 ### GitHub Pagesへのデプロイ
 
 `main`ブランチへの `apps/web` 変更のpushで、`.github/workflows/deploy-web.yml` が自動的にビルド・GitHub Pagesへのデプロイを行います。
+
+## スマホアプリ（apps/mobile）の使い方
+
+```bash
+cd apps/mobile
+flutter pub get
+flutter run
+```
+
+1. 初回起動時にGoogle AI StudioのAPIキーを入力（端末内にのみ保存）
+2. PCビューワーに表示されたQRコードを読み取ってペアリング
+3. 手元のノートを画面に収め、画面中央のボタンをタップして撮影・送信
+
+詳細は[`apps/mobile/README.md`](./apps/mobile/README.md)を参照してください。
 
 ## データ利用に関する注意（重要）
 
