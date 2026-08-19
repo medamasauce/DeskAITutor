@@ -6,7 +6,9 @@ plugins {
 
 android {
     namespace = "com.deskaitutor.mobile"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_androidがcompileSdk 37を要求するため、
+    // flutter.compileSdkVersion(既定値)より明示的に高いバージョンを指定する。
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
